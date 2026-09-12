@@ -3,39 +3,50 @@
 import { useEffect } from "react";
 import { X, Building2, Mail, Phone, MapPin, Home, FlaskConical } from "lucide-react";
 
+export type CompanyInfo = {
+  _id: string;
+  name: string;
+  location: string;
+  address: string;
+  contactNum: string;
+  email: string | null;
+};
+
+export type SellingMaterialInfo = {
+  _id: string;
+  sourceLocation: string;
+  cadence: string;
+  state: string;
+  data: Record<string, string | number>;
+  chemical: {
+    name: string;
+    formula: string;
+    casNumber: string;
+  };
+};
+
+// Shape returned by POST /api/search/selling-materials, where `company` is
+// nested inside `sellingMaterial`.
 export type SellingMaterialResult = {
   score: number;
-  sellingMaterial: {
-    _id: string;
+  sellingMaterial: SellingMaterialInfo & {
     manufacturingCompanyId: string;
-    sourceLocation: string;
-    cadence: string;
-    state: string;
-    data: Record<string, string | number>;
-    chemical: {
-      name: string;
-      formula: string;
-      casNumber: string;
-    };
-    company: {
-      _id: string;
-      name: string;
-      location: string;
-      address: string;
-      contactNum: string;
-      email: string | null;
-    };
+    company: CompanyInfo;
   };
 };
 
 export default function CompanyDetailsModal({
   open,
   onClose,
-  result,
+  score,
+  sellingMaterial,
+  company,
 }: {
   open: boolean;
   onClose: () => void;
-  result: SellingMaterialResult | null;
+  score: number | null;
+  sellingMaterial: SellingMaterialInfo | null;
+  company: CompanyInfo | null;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -46,10 +57,9 @@ export default function CompanyDetailsModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  if (!open || !result) return null;
+  if (!open || !sellingMaterial || !company) return null;
 
-  const { sellingMaterial, score } = result;
-  const { company, chemical } = sellingMaterial;
+  const { chemical } = sellingMaterial;
 
   return (
     <div
@@ -129,9 +139,11 @@ export default function CompanyDetailsModal({
                 </p>
               </div>
             </div>
-            <span className="shrink-0 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-              {Math.round(score * 100)}% match
-            </span>
+            {score !== null && (
+              <span className="shrink-0 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
+                {Math.round(score * 100)}% match
+              </span>
+            )}
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">

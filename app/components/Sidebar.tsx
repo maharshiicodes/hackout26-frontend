@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, Leaf } from "lucide-react";
+import { LayoutDashboard, Rss, Building2, Leaf } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Feed", href: "/feed", icon: Rss },
   { label: "Profile", href: "/profile", icon: Building2 },
 ];
 

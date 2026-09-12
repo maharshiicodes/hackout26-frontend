@@ -56,6 +56,8 @@ type AuthState = {
   setHasHydrated: (hasHydrated: boolean) => void;
   setToken: (token: string, companyId: string) => void;
   fetchProfile: () => Promise<void>;
+  removeSellingMaterial: (id: string) => void;
+  removeBuyingMaterial: (id: string) => void;
   logout: () => void;
 };
 
@@ -87,6 +89,24 @@ export const useAuthStore = create<AuthState>()(
           }
         }
       },
+      removeSellingMaterial: (id) =>
+        set((state) => ({
+          company: state.company
+            ? {
+                ...state.company,
+                sellingMaterials: state.company.sellingMaterials.filter((item) => item._id !== id),
+              }
+            : state.company,
+        })),
+      removeBuyingMaterial: (id) =>
+        set((state) => ({
+          company: state.company
+            ? {
+                ...state.company,
+                buyingMaterials: state.company.buyingMaterials.filter((item) => item._id !== id),
+              }
+            : state.company,
+        })),
       logout: () => set({ token: null, companyId: null, company: null }),
     }),
     {

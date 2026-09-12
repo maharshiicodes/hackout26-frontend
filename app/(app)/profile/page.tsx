@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Building2,
   Mail,
@@ -14,23 +15,40 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
+import { apiClient } from "@/app/lib/apiClient";
 import { useAuthStore } from "@/app/store/authStore";
 import SellProductModal from "@/app/components/SellProductModal";
 import BuyProductModal from "@/app/components/BuyProductModal";
+import { InlineDeleteButton } from "@/app/components/InlineDeleteButton";
+
+function toErrorMessage(err: unknown): never {
+  if (axios.isAxiosError(err) && err.response?.data?.message) {
+    throw new Error(err.response.data.message);
+  }
+  throw new Error("Something went wrong. Please try again.");
+}
 
 export default function ProfilePage() {
   const company = useAuthStore((state) => state.company);
   const isLoadingProfile = useAuthStore((state) => state.isLoadingProfile);
   const profileError = useAuthStore((state) => state.profileError);
   const fetchProfile = useAuthStore((state) => state.fetchProfile);
+  const removeSellingMaterial = useAuthStore((state) => state.removeSellingMaterial);
+  const removeBuyingMaterial = useAuthStore((state) => state.removeBuyingMaterial);
 
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    // Skip the fetch if we already have a cached profile from an earlier
+    // visit this session (e.g. navigating back from Dashboard) - only the
+    // Sell/Buy success handlers below force a fresh fetch after that.
+    if (!useAuthStore.getState().company) {
+      fetchProfile();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleSellSuccess() {
     setIsSellModalOpen(false);
@@ -44,6 +62,24 @@ export default function ProfilePage() {
     setSuccessMessage("Your buy request was submitted successfully.");
     fetchProfile();
     setTimeout(() => setSuccessMessage(""), 4000);
+  }
+
+  async function handleDeleteSelling(id: string) {
+    try {
+      await apiClient.delete(`/api/selling-materials/${id}`);
+      removeSellingMaterial(id);
+    } catch (err) {
+      toErrorMessage(err);
+    }
+  }
+
+  async function handleDeleteBuying(id: string) {
+    try {
+      await apiClient.delete(`/api/buying-materials/${id}`);
+      removeBuyingMaterial(id);
+    } catch (err) {
+      toErrorMessage(err);
+    }
   }
 
   if (isLoadingProfile && !company) {
@@ -148,21 +184,24 @@ export default function ProfilePage() {
                 key={item._id}
                 className="rounded-xl border border-black/10 bg-white p-4 shadow-sm"
               >
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                    <FlaskConical className="h-4.5 w-4.5 text-blue-600" />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                      <FlaskConical className="h-4.5 w-4.5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-black">
+                        {item.chemical.name}{" "}
+                        <span className="font-normal text-black/40">({item.chemical.formula})</span>
+                      </p>
+                      <p className="text-xs text-black/50">CAS {item.chemical.casNumber}</p>
+                      <p className="mt-1.5 flex items-center gap-1 text-sm text-black/60">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {item.sourceLocation}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-black">
-                      {item.chemical.name}{" "}
-                      <span className="font-normal text-black/40">({item.chemical.formula})</span>
-                    </p>
-                    <p className="text-xs text-black/50">CAS {item.chemical.casNumber}</p>
-                    <p className="mt-1.5 flex items-center gap-1 text-sm text-black/60">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {item.sourceLocation}
-                    </p>
-                  </div>
+                  <InlineDeleteButton onDelete={() => handleDeleteSelling(item._id)} />
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <span className="rounded-full bg-black/5 px-2.5 py-1 text-xs capitalize text-black/60">
@@ -201,21 +240,24 @@ export default function ProfilePage() {
                 key={item._id}
                 className="rounded-xl border border-black/10 bg-white p-4 shadow-sm"
               >
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                    <FlaskConical className="h-4.5 w-4.5 text-blue-600" />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                      <FlaskConical className="h-4.5 w-4.5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-black">
+                        {item.chemical.name}{" "}
+                        <span className="font-normal text-black/40">({item.chemical.formula})</span>
+                      </p>
+                      <p className="text-xs text-black/50">CAS {item.chemical.casNumber}</p>
+                      <p className="mt-1.5 flex items-center gap-1 text-sm text-black/60">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {item.reqLocation}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-black">
-                      {item.chemical.name}{" "}
-                      <span className="font-normal text-black/40">({item.chemical.formula})</span>
-                    </p>
-                    <p className="text-xs text-black/50">CAS {item.chemical.casNumber}</p>
-                    <p className="mt-1.5 flex items-center gap-1 text-sm text-black/60">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {item.reqLocation}
-                    </p>
-                  </div>
+                  <InlineDeleteButton onDelete={() => handleDeleteBuying(item._id)} />
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {Object.entries(item.data).map(([key, value]) => (

@@ -193,7 +193,9 @@ export default function DashboardPage() {
       <CompanyDetailsModal
         open={!!selectedResult}
         onClose={() => setSelectedResult(null)}
-        result={selectedResult}
+        score={selectedResult?.score ?? null}
+        sellingMaterial={selectedResult?.sellingMaterial ?? null}
+        company={selectedResult?.sellingMaterial.company ?? null}
       />
     </div>
   );
