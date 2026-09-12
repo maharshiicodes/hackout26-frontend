@@ -13,22 +13,9 @@ import {
 } from "lucide-react";
 import { apiClient } from "@/app/lib/apiClient";
 import SellProductModal from "@/app/components/SellProductModal";
-
-type SellingMaterialResult = {
-  score: number;
-  sellingMaterial: {
-    _id: string;
-    sourceLocation: string;
-    cadence: string;
-    state: string;
-    data: Record<string, string | number>;
-    chemical: {
-      name: string;
-      formula: string;
-      casNumber: string;
-    };
-  };
-};
+import CompanyDetailsModal, {
+  type SellingMaterialResult,
+} from "@/app/components/CompanyDetailsModal";
 
 export default function DashboardPage() {
   const [query, setQuery] = useState("");
@@ -38,6 +25,7 @@ export default function DashboardPage() {
   const [casNumber, setCasNumber] = useState("");
   const [results, setResults] = useState<SellingMaterialResult[]>([]);
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
+  const [selectedResult, setSelectedResult] = useState<SellingMaterialResult | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
 
   async function handleSearch(e: React.FormEvent) {
@@ -135,10 +123,18 @@ export default function DashboardPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-black/40">
               Showing sellers for CAS {casNumber}
             </p>
-            {results.map(({ score, sellingMaterial }) => (
+            {results.map((result) => {
+              const { score, sellingMaterial } = result;
+              return (
               <div
                 key={sellingMaterial._id}
-                className="rounded-xl border border-black/10 bg-white p-4 shadow-sm"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedResult(result)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setSelectedResult(result);
+                }}
+                className="cursor-pointer rounded-xl border border-black/10 bg-white p-4 shadow-sm transition-colors hover:border-blue-300 hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
@@ -183,7 +179,8 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -192,6 +189,11 @@ export default function DashboardPage() {
         open={isSellModalOpen}
         onClose={() => setIsSellModalOpen(false)}
         onSuccess={handleSellSuccess}
+      />
+      <CompanyDetailsModal
+        open={!!selectedResult}
+        onClose={() => setSelectedResult(null)}
+        result={selectedResult}
       />
     </div>
   );
