@@ -7,6 +7,7 @@ import Image from "next/image";
 import axios from "axios";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, Leaf } from "lucide-react";
 import { useAuthStore } from "@/app/store/authStore";
+import {apiClient} from "@/app/lib/apiClient";
 
 export default function LoginComponent() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function LoginComponent() {
     setIsSubmitting(true);
 
     try {
-     const response =  await axios.post("http://localhost:5000/api/auth/login", {
+     const response =  await apiClient.post("/api/auth/login", {
         email: emailValue,
         password: passwordValue,
       });
