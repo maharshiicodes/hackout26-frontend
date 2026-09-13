@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Rss, Building2, Leaf } from "lucide-react";
+import { LayoutDashboard, Rss, Bookmark, Building2, Leaf } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Feed", href: "/feed", icon: Rss },
+  { label: "Bookmarks", href: "/bookmarks", icon: Bookmark },
   { label: "Profile", href: "/profile", icon: Building2 },
 ];
 
@@ -16,9 +17,9 @@ export default function Sidebar() {
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-black/10 bg-white">
       <div className="flex items-center gap-2 px-6 py-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600">
+        {/*<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600">
           <Leaf className="h-5 w-5 text-white" />
-        </div>
+        </div>*/}
         <span className="text-lg font-semibold tracking-tight text-black">
           ReCarbon
         </span>
