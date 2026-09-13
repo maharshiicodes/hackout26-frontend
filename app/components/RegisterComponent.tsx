@@ -9,6 +9,7 @@ import {
   Building2,
   MapPin,
   Home,
+  Hash,
   Phone,
   Mail,
   Lock,
@@ -24,6 +25,7 @@ type RegisterFormState = {
   name: string;
   location: string;
   address: string;
+  pincode: string;
   contactNum: string;
   email: string;
   password: string;
@@ -33,6 +35,7 @@ const initialFormState: RegisterFormState = {
   name: "",
   location: "",
   address: "",
+  pincode: "",
   contactNum: "",
   email: "",
   password: "",
@@ -55,6 +58,12 @@ export default function RegisterComponent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMessage("");
+
+    if (!/^\d{6}$/.test(formState.pincode)) {
+      setErrorMessage("Pincode must be exactly 6 digits.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -191,6 +200,30 @@ export default function RegisterComponent() {
                   placeholder="456 Business Park"
                   value={formState.address}
                   onChange={(e) => updateField("address", e.target.value)}
+                  className="w-full rounded-lg border border-black/15 bg-white py-2.5 pl-10 pr-3 text-sm text-black placeholder:text-black/35 outline-none transition-colors focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="pincode"
+                className="mb-1.5 block text-sm font-medium text-black"
+              >
+                Pincode
+              </label>
+              <div className="relative">
+                <Hash className="pointer-events-none absolute left-3 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-black/40" />
+                <input
+                  id="pincode"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  autoComplete="postal-code"
+                  required
+                  placeholder="380001"
+                  value={formState.pincode}
+                  onChange={(e) => updateField("pincode", e.target.value.replace(/\D/g, ""))}
                   className="w-full rounded-lg border border-black/15 bg-white py-2.5 pl-10 pr-3 text-sm text-black placeholder:text-black/35 outline-none transition-colors focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                 />
               </div>

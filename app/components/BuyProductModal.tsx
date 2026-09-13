@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { X, FlaskConical, MapPin, Loader2, ShoppingCart } from "lucide-react";
+import { X, FlaskConical, MapPin, Hash, Loader2, ShoppingCart } from "lucide-react";
 import { apiClient } from "@/app/lib/apiClient";
 import { DynamicAttributes, attributesToRecord, type AttributeRow } from "@/app/components/DynamicAttributes";
 import { INDIAN_STATES } from "@/app/lib/indianStates";
@@ -14,6 +14,7 @@ type BuyFormState = {
   casNumber: string;
   city: string;
   region: string;
+  reqPincode: string;
   purity: string;
   quantity: string;
   unit: string;
@@ -25,6 +26,7 @@ const initialFormState: BuyFormState = {
   casNumber: "",
   city: "",
   region: "",
+  reqPincode: "",
   purity: "",
   quantity: "",
   unit: "",
@@ -65,6 +67,12 @@ export default function BuyProductModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMessage("");
+
+    if (!/^\d{6}$/.test(formState.reqPincode)) {
+      setErrorMessage("Delivery pincode must be exactly 6 digits.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -75,6 +83,7 @@ export default function BuyProductModal({
           casNumber: formState.casNumber,
         },
         reqLocation: `${formState.city.trim()}, ${formState.region}`,
+        reqPincode: formState.reqPincode,
         data: {
           purity: Number(formState.purity),
           quantity: Number(formState.quantity),
@@ -218,6 +227,26 @@ export default function BuyProductModal({
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="buyReqPincode" className="mb-1.5 block text-sm font-medium text-black">
+              Delivery pincode
+            </label>
+            <div className="relative">
+              <Hash className="pointer-events-none absolute left-3 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-black/40" />
+              <input
+                id="buyReqPincode"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                required
+                placeholder="380001"
+                value={formState.reqPincode}
+                onChange={(e) => updateField("reqPincode", e.target.value.replace(/\D/g, ""))}
+                className={inputClass}
+              />
             </div>
           </div>
 

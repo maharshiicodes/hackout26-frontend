@@ -8,6 +8,10 @@ import { DynamicAttributes, attributesToRecord, type AttributeRow } from "@/app/
 import { INDIAN_STATES } from "@/app/lib/indianStates";
 import { UNIT_OPTIONS } from "@/app/lib/units";
 
+type Cadence = "daily" | "weekly" | "monthly" | "quarterly" | "yearly";
+
+const CADENCE_OPTIONS: Cadence[] = ["daily", "weekly", "monthly", "quarterly", "yearly"];
+
 type SellFormState = {
   chemicalName: string;
   chemicalFormula: string;
@@ -15,6 +19,7 @@ type SellFormState = {
   city: string;
   region: string;
   state: "" | "solid" | "liquid" | "gas";
+  cadence: Cadence;
   purity: string;
   quantity: string;
   unit: string;
@@ -27,6 +32,7 @@ const initialFormState: SellFormState = {
   city: "",
   region: "",
   state: "",
+  cadence: "monthly",
   purity: "",
   quantity: "",
   unit: "",
@@ -77,7 +83,7 @@ export default function SellProductModal({
           casNumber: formState.casNumber,
         },
         sourceLocation: `${formState.city.trim()}, ${formState.region}`,
-        cadence: "monthly",
+        cadence: formState.cadence,
         state: formState.state,
         data: {
           purity: Number(formState.purity),
@@ -252,11 +258,16 @@ export default function SellProductModal({
               </label>
               <select
                 id="cadence"
-                disabled
-                value="monthly"
-                className="w-full cursor-not-allowed rounded-lg border border-black/15 bg-black/5 py-2.5 px-3 text-sm text-black/60 outline-none"
+                required
+                value={formState.cadence}
+                onChange={(e) => updateField("cadence", e.target.value as Cadence)}
+                className="w-full rounded-lg border border-black/15 bg-white py-2.5 px-3 text-sm text-black outline-none transition-colors focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
               >
-                <option value="monthly">Monthly</option>
+                {CADENCE_OPTIONS.map((option) => (
+                  <option key={option} value={option} className="capitalize">
+                    {option[0].toUpperCase() + option.slice(1)}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

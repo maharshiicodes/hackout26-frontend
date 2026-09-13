@@ -7,6 +7,7 @@ import {
   Mail,
   MapPin,
   Home,
+  Hash,
   Phone,
   FlaskConical,
   PackagePlus,
@@ -147,6 +148,12 @@ export default function ProfilePage() {
             <Home className="h-4 w-4 shrink-0 text-black/40" />
             {company.address}
           </p>
+          {company.pincode && (
+            <p className="flex items-center gap-2 text-sm text-black/70">
+              <Hash className="h-4 w-4 shrink-0 text-black/40" />
+              {company.pincode}
+            </p>
+          )}
         </div>
       </div>
 
@@ -254,6 +261,7 @@ export default function ProfilePage() {
                       <p className="mt-1.5 flex items-center gap-1 text-sm text-black/60">
                         <MapPin className="h-3.5 w-3.5" />
                         {item.reqLocation}
+                        {item.reqPincode && ` (${item.reqPincode})`}
                       </p>
                     </div>
                   </div>

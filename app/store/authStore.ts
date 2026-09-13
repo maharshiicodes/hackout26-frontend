@@ -27,6 +27,7 @@ export type SellingMaterialItem = {
 export type BuyingMaterialItem = {
   _id: string;
   reqLocation: string;
+  reqPincode: string | null;
   data: Record<string, string | number>;
   createdAt: string;
   updatedAt: string;
@@ -38,6 +39,7 @@ export type CompanyProfile = {
   name: string;
   location: string;
   address: string;
+  pincode: string | null;
   contactNum: string;
   email: string | null;
   createdAt: string;
