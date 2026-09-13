@@ -36,7 +36,7 @@ export function BookmarkButton({
       className={`shrink-0 rounded-full p-1.5 transition-colors ${
         isBookmarked
           ? "bg-blue-50 text-blue-600 hover:bg-blue-100"
-          : "text-black/40 hover:bg-black/5 hover:text-black"
+          : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
       } ${className ?? ""}`}
     >
       <Bookmark className="h-4 w-4" fill={isBookmarked ? "currentColor" : "none"} />

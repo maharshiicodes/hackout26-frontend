@@ -22,14 +22,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // instead of a blank screen during that brief window (and while redirecting).
   if (!hasHydrated || !token) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-gray-50">
-        <Loader2 className="h-6 w-6 animate-spin text-black/40" />
+      <div className="app-shell flex min-h-screen w-full items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-gray-50">
+    <div className="app-shell flex min-h-screen w-full">
       <Sidebar />
       <main className="min-w-0 flex-1">{children}</main>
     </div>
