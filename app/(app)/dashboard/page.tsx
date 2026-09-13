@@ -111,28 +111,58 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <motion.form
+        <motion.div
           layout
-          onSubmit={handleSearch}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className={`relative mx-auto w-full ${hasSearched ? "max-w-4xl" : "max-w-2xl"}`}
         >
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-black/40" />
-          <input
-            type="text"
-            placeholder='Describe what you need, e.g. "hydrochloric acid CAS 7647-01-0, 99% purity"'
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-lg border border-black/15 bg-white py-3 pl-10 pr-24 text-sm text-black placeholder:text-black/35 outline-none transition-colors focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
-          />
-          <button
-            type="submit"
-            disabled={isSearching}
-            className="absolute right-1.5 top-1.5 flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
-          </button>
-        </motion.form>
+          <AnimatePresence>
+            {!hasSearched && (
+              <motion.div
+                key="search-glow"
+                aria-hidden
+                className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-400 blur-3xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.25, 0.45, 0.25], scale: [0.98, 1.02, 0.98] }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                  scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                }}
+              />
+            )}
+          </AnimatePresence>
+
+          <form onSubmit={handleSearch} className="relative w-full">
+            <Search
+              className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-black/40 transition-all duration-300 ${
+                hasSearched ? "left-3 h-4.5 w-4.5" : "left-5 h-5 w-5"
+              }`}
+            />
+            <input
+              type="text"
+              placeholder='Describe what you need, e.g. "hydrochloric acid CAS 7647-01-0, 99% purity"'
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className={`w-full border bg-white text-black placeholder:text-black/35 outline-none transition-all duration-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 ${
+                hasSearched
+                  ? "rounded-lg border-black/15 py-3 pl-10 pr-24 text-sm"
+                  : "rounded-3xl border-black/10 py-5 pl-14 pr-32 text-base shadow-lg"
+              }`}
+            />
+            <button
+              type="submit"
+              disabled={isSearching}
+              className={`absolute flex items-center gap-1.5 bg-blue-600 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 ${
+                hasSearched
+                  ? "right-1.5 top-1.5 rounded-md px-3 py-1.5 text-sm"
+                  : "right-2.5 top-2.5 rounded-2xl px-4 py-2.5 text-sm"
+              }`}
+            >
+              {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
+            </button>
+          </form>
+        </motion.div>
       </motion.div>
 
       {hasSearched && (
